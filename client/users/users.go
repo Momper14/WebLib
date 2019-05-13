@@ -19,6 +19,7 @@ type User struct {
 	Password string `json:"Password"`
 	Email    string `json:"Email"`
 	Seit     string `json:"Seit"`
+	Bild     string `json:"Bild"`
 }
 
 // UserByID gibt den User mit der angegebenen ID zurück
