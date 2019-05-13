@@ -18,7 +18,7 @@ type User struct {
 	Rev      string `json:"_rev"`
 	Password string `json:"Password"`
 	Email    string `json:"Email"`
-	Seit     string `json:"Seit"`
+	Seit     int64  `json:"Seit"`
 	Bild     string `json:"Bild"`
 }
 
