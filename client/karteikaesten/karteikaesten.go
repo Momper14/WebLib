@@ -9,9 +9,9 @@ import (
 type Karteikaesten struct {
 	db    api.DB
 	views struct {
-		OeffentlichKastenidKartenid OeffentlichKastenidKartenid
-		NachAutor                   NachAutor
-		OeffentlichNachKategorie    OeffentlichNachKategorie
+		OeffentlichKastenindexKartenindex OeffentlichKastenindexKartenindex
+		NachAutor                         NachAutor
+		OeffentlichNachKategorie          OeffentlichNachKategorie
 	}
 }
 
@@ -20,18 +20,6 @@ type Row struct {
 	ID       string `json:"id"`
 	KastenID string `json:"key"`
 	Rev      string `json:"value"`
-}
-
-func rowViewToRow(rows []api.RowView) []Row {
-	var arr []Row
-	for _, r := range rows {
-		arr = append(arr, Row{
-			ID:       r.ID.(string),
-			KastenID: r.Key.(string),
-			Rev:      r.Value.(string),
-		})
-	}
-	return arr
 }
 
 // AnzahlOeffentlicherKaesten returns count of Rows
@@ -46,7 +34,7 @@ func (db Karteikaesten) AnzahlKaestenUser(id string) (int, error) {
 
 // AnzahlOeffentlicherKarten returns count of Rows
 func (db Karteikaesten) AnzahlOeffentlicherKarten() (int, error) {
-	return db.views.OeffentlichKastenidKartenid.RowCount()
+	return db.views.OeffentlichKastenindexKartenindex.RowCount()
 }
 
 // OeffentlicheKaestenByKategorie returns a list with all Karteikasten of given Kategorie
@@ -87,8 +75,8 @@ func New() Karteikaesten {
 	d := api.New(client.HostURL).DB("karteikaesten")
 	db.db = d
 
-	db.views.OeffentlichKastenidKartenid = OeffentlichKastenidKartenid{
-		View: d.View("karten", "oeffentlich-kastenid-kartenid"),
+	db.views.OeffentlichKastenindexKartenindex = OeffentlichKastenindexKartenindex{
+		View: d.View("karten", "oeffentlich-kastenid-kartenindex"),
 	}
 
 	db.views.NachAutor = NachAutor{

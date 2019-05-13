@@ -81,7 +81,7 @@ func main() {
 		}
 		fmt.Println("")
 		{
-			tmp, err := kasten.FachVonKarte("Max Mustermann", "01f1e044bba5d34d166dfd5ebe015ce6")
+			tmp, err := kasten.FachVonKarte("Max Mustermann", 3)
 			if err != nil {
 				log.Fatal(err)
 			} else {
@@ -144,15 +144,6 @@ func main() {
 				for _, lern := range tmp {
 					fmt.Printf("%+v\n", lern)
 				}
-			}
-		}
-		fmt.Print("\n")
-		{
-			tmp, err := lernen.FachVonKarte("Max Mustermann", "01f1e044bba5d34d166dfd5ebe02729c")
-			if err != nil {
-				log.Fatal(err)
-			} else {
-				fmt.Printf("%+v\n", tmp)
 			}
 		}
 	}

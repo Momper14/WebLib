@@ -8,22 +8,20 @@ import (
 
 // Karteikasten struct of a Karteikasten
 type Karteikasten struct {
-	ID             string                 `json:"_id"`
-	Rev            string                 `json:"_rev"`
-	Autor          string                 `json:"Autor"`
-	Kategorie      string                 `json:"Kategorie"`
-	Unterkategorie string                 `json:"Unterkategorie"`
-	Name           string                 `json:"name"`
-	Beschreibung   string                 `json:"Beschreibung"`
-	Public         bool                   `json:"Public"`
-	Karten         map[string]Karteikarte `json:"Karten"`
+	ID             string        `json:"_id"`
+	Rev            string        `json:"_rev"`
+	Autor          string        `json:"Autor"`
+	Kategorie      string        `json:"Kategorie"`
+	Unterkategorie string        `json:"Unterkategorie"`
+	Name           string        `json:"name"`
+	Beschreibung   string        `json:"Beschreibung"`
+	Public         bool          `json:"Public"`
+	Karten         []Karteikarte `json:"Karten"`
 	lerne          lernen.Lerne
 }
 
 // Karteikarte struct of a Karteikarte
 type Karteikarte struct {
-	ID      string `json:"_id"`
-	Nr      int    `json:"Nr"`
 	Titel   string `json:"Titel"`
 	Frage   string `json:"Frage"`
 	Antwort string `json:"Antwort"`
@@ -69,15 +67,16 @@ func (k Karteikasten) KartenProFach(userid string) ([5]int, error) {
 }
 
 // FachVonKarte returns Fach of Karte
-func (k Karteikasten) FachVonKarte(userid, kartenid string) (int, error) {
+func (k Karteikasten) FachVonKarte(userid string, kartenindex int) (int, error) {
 	lerne, err := k.getLerne(userid)
 	if err != nil {
 		return -1, err
 	}
-	if val, ok := lerne.Karten[kartenid]; ok {
-		return val, nil
+
+	if len(lerne.Karten) <= kartenindex {
+		return -1, fmt.Errorf("Fehler: Karte %d für User %s in Kasten %s nicht gefunden", kartenindex, userid, k.ID)
 	}
-	return -1, fmt.Errorf("Fehler: Karte %s für User %s nicht gefunden", kartenid, userid)
+	return lerne.Karten[kartenindex], nil
 }
 
 func (k Karteikasten) getLerne(userid string) (lernen.Lerne, error) {

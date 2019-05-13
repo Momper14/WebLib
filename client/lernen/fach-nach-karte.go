@@ -11,9 +11,9 @@ type FachNachKarte struct {
 
 // FachNachKarteRow row from view kastenid-kartenid
 type FachNachKarteRow struct {
-	ID       string   `json:"id"`
-	KartenID []string `json:"key"`
-	Fach     int      `json:"value"`
+	ID   string   `json:"id"`
+	Key  []string `json:"key"`
+	Fach int      `json:"value"`
 }
 
 // AllDocs returns all Docs from a DB

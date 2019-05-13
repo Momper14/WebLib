@@ -19,11 +19,11 @@ type Lernen struct {
 
 // Lerne struct of a Karteikasten
 type Lerne struct {
-	ID     string         `json:"_id"`
-	Rev    string         `json:"_rev"`
-	User   string         `json:"User"`
-	Kasten string         `json:"Kasten"`
-	Karten map[string]int `json:"Karten"`
+	ID     string `json:"_id"`
+	Rev    string `json:"_rev"`
+	User   string `json:"User"`
+	Kasten string `json:"Kasten"`
+	Karten []int  `json:"Karten"`
 }
 
 // LerneByID returns all Docs matching the given key
@@ -76,9 +76,9 @@ func (db Lernen) GelerntVonUser(userid string) ([]Lerne, error) {
 }
 
 // FachVonKarte returns all Docs matching the given key
-func (db Lernen) FachVonKarte(userid, kartenid string) (int, error) {
+func (db Lernen) FachVonKarte(userid, kastenid, kartenindex string) (int, error) {
 	rows := []FachNachKarteRow{}
-	key := fmt.Sprintf("[\"%s\", \"%s\"]", userid, kartenid)
+	key := fmt.Sprintf("[\"%s\", \"%s\", \"%s\"]", userid, kastenid, kartenindex)
 
 	if err := db.views.FachNachKarte.DocsByKey(key, &rows); err != nil {
 		return -1, err
