@@ -17,6 +17,7 @@ type Karteikasten struct {
 	Beschreibung   string                 `json:"Beschreibung"`
 	Public         bool                   `json:"Public"`
 	Karten         map[string]Karteikarte `json:"Karten"`
+	lerne          lernen.Lerne
 }
 
 // Karteikarte struct of a Karteikarte
@@ -55,7 +56,7 @@ func (k Karteikasten) Fortschritt(userid string) (int, error) {
 func (k Karteikasten) KartenProFach(userid string) ([5]int, error) {
 	var faecher [5]int
 
-	lerne, err := k.lerne(userid)
+	lerne, err := k.getLerne(userid)
 	if err != nil {
 		return faecher, err
 	}
@@ -69,7 +70,7 @@ func (k Karteikasten) KartenProFach(userid string) ([5]int, error) {
 
 // FachVonKarte returns Fach of Karte
 func (k Karteikasten) FachVonKarte(userid, kartenid string) (int, error) {
-	lerne, err := k.lerne(userid)
+	lerne, err := k.getLerne(userid)
 	if err != nil {
 		return -1, err
 	}
@@ -79,7 +80,10 @@ func (k Karteikasten) FachVonKarte(userid, kartenid string) (int, error) {
 	return -1, fmt.Errorf("Fehler: Karte %s für User %s nicht gefunden", kartenid, userid)
 }
 
-func (k Karteikasten) lerne(userid string) (lernen.Lerne, error) {
-	lernen := lernen.New()
-	return lernen.LerneByUserAndKasten(userid, k.ID)
+func (k Karteikasten) getLerne(userid string) (lernen.Lerne, error) {
+	var err error
+	if k.lerne.ID != userid {
+		k.lerne, err = lernen.New().LerneByUserAndKasten(userid, k.ID)
+	}
+	return k.lerne, err
 }

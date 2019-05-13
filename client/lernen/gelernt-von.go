@@ -11,9 +11,9 @@ type GelerntVon struct {
 
 // GelerntVonRow row from view kastenid-kartenid
 type GelerntVonRow struct {
-	ID         string        `json:"id"`
-	UserKasten []interface{} `json:"key"`
-	Rev        string        `json:"value"`
+	ID         string   `json:"id"`
+	UserKasten []string `json:"key"`
+	Rev        string   `json:"value"`
 }
 
 // AllDocs returns all Docs from a DB

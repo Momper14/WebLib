@@ -11,8 +11,9 @@ import (
 type Lernen struct {
 	db    api.DB
 	views struct {
-		GelerntVon GelerntVon
-		NachUser   NachUser
+		GelerntVon    GelerntVon
+		NachUser      NachUser
+		FachNachKarte FachNachKarte
 	}
 }
 
@@ -74,6 +75,20 @@ func (db Lernen) GelerntVonUser(userid string) ([]Lerne, error) {
 	return gelerntVon, nil
 }
 
+// FachVonKarte returns all Docs matching the given key
+func (db Lernen) FachVonKarte(userid, kartenid string) (int, error) {
+	rows := []FachNachKarteRow{}
+	key := fmt.Sprintf("[\"%s\", \"%s\"]", userid, kartenid)
+
+	if err := db.views.FachNachKarte.DocsByKey(key, &rows); err != nil {
+		return -1, err
+	}
+	if len(rows) == 0 {
+		return -1, fmt.Errorf("Error: Keine karte grfunden")
+	}
+	return rows[0].Fach, nil
+}
+
 // New creates a Lernen
 func New() Lernen {
 	var db Lernen
@@ -86,6 +101,9 @@ func New() Lernen {
 
 	db.views.NachUser = NachUser{
 		View: d.View("user", "nach-user")}
+
+	db.views.FachNachKarte = FachNachKarte{
+		View: d.View("karten", "fach-nach-karte")}
 
 	return db
 }
