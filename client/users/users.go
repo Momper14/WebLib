@@ -12,7 +12,7 @@ type Users struct {
 	}
 }
 
-// User struct of a Karteikasten
+// User struct of a User
 type User struct {
 	ID       string `json:"_id"`
 	Rev      string `json:"_rev"`
@@ -21,7 +21,7 @@ type User struct {
 	Seit     string `json:"Seit"`
 }
 
-// UserByID returns all Docs matching the given key
+// UserByID gibt den User mit der angegebenen ID zurück
 func (db Users) UserByID(id string) (User, error) {
 	doc := User{}
 
@@ -32,12 +32,12 @@ func (db Users) UserByID(id string) (User, error) {
 	return doc, nil
 }
 
-// AnzahlUsers returns count of Rows
+// AnzahlUsers gibt die Anzahl an User zurück
 func (db Users) AnzahlUsers() (int, error) {
 	return db.db.RowCount()
 }
 
-// New creates a Users
+// New erzeugt einen neuen Users-Handler
 func New() Users {
 	var db Users
 

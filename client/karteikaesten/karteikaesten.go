@@ -9,35 +9,37 @@ import (
 type Karteikaesten struct {
 	db    api.DB
 	views struct {
-		OeffentlichKastenindexKartenindex OeffentlichKastenindexKartenindex
-		NachAutor                         NachAutor
-		OeffentlichNachKategorie          OeffentlichNachKategorie
+		OeffentlichKastenidKartenindex OeffentlichKastenidKartenindex
+		NachAutor                      NachAutor
+		OeffentlichNachKategorie       OeffentlichNachKategorie
 	}
 }
 
-// Row row from view kastenid-kartenid
+// Row row from Karteikaesten
 type Row struct {
 	ID       string `json:"id"`
 	KastenID string `json:"key"`
 	Rev      string `json:"value"`
 }
 
-// AnzahlOeffentlicherKaesten returns count of Rows
+// AnzahlOeffentlicherKaesten gibt die Anzahl öffentlicher Karteikästen zurück
 func (db Karteikaesten) AnzahlOeffentlicherKaesten() (int, error) {
 	return db.views.OeffentlichNachKategorie.RowCount()
 }
 
-// AnzahlKaestenUser returns count of Rows
+// AnzahlKaestenUser gibt die Anzahl von Karteikästen zurück,
+// welcher der angegebene User erstellt hat
 func (db Karteikaesten) AnzahlKaestenUser(id string) (int, error) {
 	return db.views.NachAutor.RowCountByKey(id)
 }
 
-// AnzahlOeffentlicherKarten returns count of Rows
+// AnzahlOeffentlicherKarten gibt die Anzahl öffentlicher Karteikarten zurück
 func (db Karteikaesten) AnzahlOeffentlicherKarten() (int, error) {
-	return db.views.OeffentlichKastenindexKartenindex.RowCount()
+	return db.views.OeffentlichKastenidKartenindex.RowCount()
 }
 
-// OeffentlicheKaestenByKategorie returns a list with all Karteikasten of given Kategorie
+// OeffentlicheKaestenByKategorie Gibt einen Array mit allen öffentlichen Karteikästen
+// der angegebenen Kategorie zurück
 func (db Karteikaesten) OeffentlicheKaestenByKategorie(kategorie string) ([]Karteikasten, error) {
 	var kaesten []Karteikasten
 	rows := []OeffentlichNachKategorieRow{}
@@ -57,7 +59,7 @@ func (db Karteikaesten) OeffentlicheKaestenByKategorie(kategorie string) ([]Kart
 	return kaesten, nil
 }
 
-// KastenByID returns all Docs matching the given key
+// KastenByID Gibt den Karteikasten der angegebenen ID zurück
 func (db Karteikaesten) KastenByID(id string) (Karteikasten, error) {
 	doc := Karteikasten{}
 
@@ -68,14 +70,14 @@ func (db Karteikaesten) KastenByID(id string) (Karteikasten, error) {
 	return doc, nil
 }
 
-// New creates a Karteikaesten
+// New erzeugt einen neuen Karteikasten-Handler
 func New() Karteikaesten {
 	var db Karteikaesten
 
 	d := api.New(client.HostURL).DB("karteikaesten")
 	db.db = d
 
-	db.views.OeffentlichKastenindexKartenindex = OeffentlichKastenindexKartenindex{
+	db.views.OeffentlichKastenidKartenindex = OeffentlichKastenidKartenindex{
 		View: d.View("karten", "oeffentlich-kastenid-kartenindex"),
 	}
 

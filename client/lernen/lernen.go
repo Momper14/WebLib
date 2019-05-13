@@ -17,7 +17,7 @@ type Lernen struct {
 	}
 }
 
-// Lerne struct of a Karteikasten
+// Lerne struct of a "Lern-state"
 type Lerne struct {
 	ID     string `json:"_id"`
 	Rev    string `json:"_rev"`
@@ -26,7 +26,7 @@ type Lerne struct {
 	Karten []int  `json:"Karten"`
 }
 
-// LerneByID returns all Docs matching the given key
+// LerneByID gibt den Lernfortschritt mit der angegebenen ID zurück
 func (db Lernen) LerneByID(id string) (Lerne, error) {
 	doc := Lerne{}
 
@@ -37,7 +37,8 @@ func (db Lernen) LerneByID(id string) (Lerne, error) {
 	return doc, nil
 }
 
-// LerneByUserAndKasten returns all Docs matching the given key
+// LerneByUserAndKasten gibt den Lernfortschritt
+// des Users für den Karteikasten zurück
 func (db Lernen) LerneByUserAndKasten(userid, kastenid string) (Lerne, error) {
 	rows := []GelerntVonRow{}
 	lerne := Lerne{}
@@ -48,7 +49,9 @@ func (db Lernen) LerneByUserAndKasten(userid, kastenid string) (Lerne, error) {
 	}
 
 	if len(rows) == 0 {
-		return lerne, client.NotFoundError{Msg: fmt.Sprintf("Error: User %s hat Kasten %s nicht gelernt", userid, kastenid)}
+		return lerne, client.NotFoundError{
+			Msg: fmt.Sprintf("Error: User %s hat Kasten %s nicht gelernt", userid, kastenid),
+		}
 	}
 
 	lerne, err := db.LerneByID(rows[0].ID)
@@ -56,7 +59,7 @@ func (db Lernen) LerneByUserAndKasten(userid, kastenid string) (Lerne, error) {
 	return lerne, err
 }
 
-// GelerntVonUser returns all Docs matching the given key
+// GelerntVonUser gibt alle Lernfortschritte des Users zurück
 func (db Lernen) GelerntVonUser(userid string) ([]Lerne, error) {
 	rows := []NachUserRow{}
 	var gelerntVon []Lerne
@@ -75,7 +78,7 @@ func (db Lernen) GelerntVonUser(userid string) ([]Lerne, error) {
 	return gelerntVon, nil
 }
 
-// FachVonKarte returns all Docs matching the given key
+// FachVonKarte gibt das Fach der Karteikarte aus dem Karteikasten für den User zurück
 func (db Lernen) FachVonKarte(userid, kastenid, kartenindex string) (int, error) {
 	rows := []FachNachKarteRow{}
 	key := fmt.Sprintf("[\"%s\", \"%s\", \"%s\"]", userid, kastenid, kartenindex)
@@ -89,7 +92,7 @@ func (db Lernen) FachVonKarte(userid, kastenid, kartenindex string) (int, error)
 	return rows[0].Fach, nil
 }
 
-// New creates a Lernen
+// New erzeugt einen neuen Lernen-Handler
 func New() Lernen {
 	var db Lernen
 

@@ -9,7 +9,7 @@ import (
 	"gopkg.in/resty.v1"
 )
 
-func allDocs(url string, data Value) error {
+func allDocs(url string, data interface{}) error {
 
 	if err := isPointer(data); err != nil {
 		return err
@@ -35,8 +35,8 @@ func rowCount(url string) (int, error) {
 
 	type Response struct {
 		Rows []struct {
-			Key   Value `json:"key"`
-			Value int   `json:"value"`
+			Key   interface{} `json:"key"`
+			Value int         `json:"value"`
 		} `json:"rows"`
 	}
 
@@ -53,7 +53,7 @@ func rowCount(url string) (int, error) {
 }
 
 // rr request with specific response type
-func rr(data Value) *resty.Request {
+func rr(data interface{}) *resty.Request {
 	return r().SetResult(data)
 }
 
@@ -62,7 +62,8 @@ func r() *resty.Request {
 	return resty.R()
 }
 
-func isPointer(v Value) error {
+// checks if given Type is a Pointer
+func isPointer(v interface{}) error {
 
 	if val := reflect.ValueOf(v); val.Kind() == reflect.Ptr {
 		return nil
@@ -70,7 +71,7 @@ func isPointer(v Value) error {
 	return fmt.Errorf("Fehler: Der angegebene Typ ist kein Pointer")
 }
 
-func docByID(id Value, url string, data interface{}) error {
+func docByID(id interface{}, url string, data interface{}) error {
 	if err := isPointer(data); err != nil {
 		return err
 	}

@@ -19,7 +19,7 @@ type Kategorie struct {
 	Unterkategorie []string `json:"Unterkategorie"`
 }
 
-// AlleKategorien returns all Docs from a DB
+// AlleKategorien gibt einen Array mit allen Kategorien zurück
 func (db Kategorien) AlleKategorien() ([]Kategorie, error) {
 	var kategorien []Kategorie
 	rows := []api.RowView{}
@@ -39,7 +39,7 @@ func (db Kategorien) AlleKategorien() ([]Kategorie, error) {
 	return kategorien, nil
 }
 
-// kategorieByID returns all Docs matching the given key
+// kategorieByID gibt die Kategorie mit der angegebenen ID zurück
 func (db Kategorien) kategorieByID(id string) (Kategorie, error) {
 	doc := Kategorie{}
 
@@ -50,7 +50,7 @@ func (db Kategorien) kategorieByID(id string) (Kategorie, error) {
 	return doc, nil
 }
 
-// New creates a Kategorien
+// New erzeugt einen neuen Kategorien-Handler
 func New() Kategorien {
 	var db Kategorien
 

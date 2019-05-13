@@ -4,19 +4,19 @@ import (
 	"github.com/Momper14/weblib/api"
 )
 
-// FachNachKarte view kastenid-kartenid
+// FachNachKarte view fach-nach-karte
 type FachNachKarte struct {
 	api.View
 }
 
-// FachNachKarteRow row from view kastenid-kartenid
+// FachNachKarteRow row from view fach-nach-karte
 type FachNachKarteRow struct {
 	ID   string   `json:"id"`
 	Key  []string `json:"key"`
 	Fach int      `json:"value"`
 }
 
-// AllDocs returns all Docs from a DB
+// AllDocs returns all Docs
 func (v FachNachKarte) AllDocs(rows *[]FachNachKarteRow) error {
 	return v.View.AllDocs(rows)
 }

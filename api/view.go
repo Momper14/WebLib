@@ -4,7 +4,7 @@ import (
 	"fmt"
 )
 
-// View DB Handler
+// View View Handler
 type View struct {
 	db     DB
 	design string
@@ -13,18 +13,18 @@ type View struct {
 
 // RowView struct for a Row of a View
 type RowView struct {
-	ID    Value `json:"id"`
-	Key   Value `json:"key"`
-	Value Value `json:"value"`
+	ID    interface{} `json:"id"`
+	Key   interface{} `json:"key"`
+	Value interface{} `json:"value"`
 }
 
-// AllDocs returns all Docs from a DB
-func (v View) AllDocs(data Value) error {
+// AllDocs returns all Docs from View
+func (v View) AllDocs(data interface{}) error {
 	return allDocs(fmt.Sprintf("%s?reduce=false", v.url()), data)
 }
 
 // DocsByKey returns all Docs matching the given key
-func (v View) DocsByKey(key Value, data Value) error {
+func (v View) DocsByKey(key interface{}, data interface{}) error {
 	if val, ok := key.(string); ok {
 		if val[0] != '[' {
 			key = fmt.Sprintf("\"%s\"", val)
@@ -33,16 +33,17 @@ func (v View) DocsByKey(key Value, data Value) error {
 	return allDocs(fmt.Sprintf("%s?reduce=false&key=%v", v.url(), key), data)
 }
 
-// RowCount returns count of Rows
+// RowCount returns number of Rows in View
 func (v View) RowCount() (int, error) {
 	return rowCount(v.url())
 }
 
-// RowCountByKey returns count of Rows
-func (v View) RowCountByKey(key Value) (int, error) {
+// RowCountByKey returns number of Rows in View with given key
+func (v View) RowCountByKey(key interface{}) (int, error) {
 	return rowCount(fmt.Sprintf("%s?key=\"%s\"", v.url(), key))
 }
 
+// url returns the URL to the View
 func (v View) url() string {
 	return (fmt.Sprintf("%s/_design/%s/_view/%s", v.db.url(), v.design, v.name))
 }
