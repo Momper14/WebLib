@@ -48,7 +48,7 @@ func (db Lernen) LerneByUserAndKasten(userid, kastenid string) (Lerne, error) {
 	}
 
 	if len(rows) == 0 {
-		return lerne, fmt.Errorf("Error: User %s hat Kasten %s nicht gelernt", userid, kastenid)
+		return lerne, client.NotFoundError{Msg: fmt.Sprintf("Error: User %s hat Kasten %s nicht gelernt", userid, kastenid)}
 	}
 
 	lerne, err := db.LerneByID(rows[0].ID)
@@ -84,7 +84,7 @@ func (db Lernen) FachVonKarte(userid, kastenid, kartenindex string) (int, error)
 		return -1, err
 	}
 	if len(rows) == 0 {
-		return -1, fmt.Errorf("Error: Keine karte grfunden")
+		return -1, client.NotFoundError{Msg: fmt.Sprintf("Error: Keine karte grfunden")}
 	}
 	return rows[0].Fach, nil
 }

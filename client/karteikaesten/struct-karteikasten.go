@@ -3,6 +3,7 @@ package karteikaesten
 import (
 	"fmt"
 
+	"github.com/Momper14/weblib/client"
 	"github.com/Momper14/weblib/client/lernen"
 )
 
@@ -74,7 +75,7 @@ func (k Karteikasten) FachVonKarte(userid string, kartenindex int) (int, error) 
 	}
 
 	if len(lerne.Karten) <= kartenindex {
-		return -1, fmt.Errorf("Fehler: Karte %d für User %s in Kasten %s nicht gefunden", kartenindex, userid, k.ID)
+		return -1, client.NotFoundError{Msg: fmt.Sprintf("Error: Karte %d für User %s in Kasten %s nicht gefunden", kartenindex, userid, k.ID)}
 	}
 	return lerne.Karten[kartenindex], nil
 }
