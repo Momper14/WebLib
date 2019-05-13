@@ -12,6 +12,7 @@ type Karteikaesten struct {
 		OeffentlichKastenidKartenindex OeffentlichKastenidKartenindex
 		NachAutor                      NachAutor
 		OeffentlichNachKategorie       OeffentlichNachKategorie
+		KartenNachAutor                KartenNachAutor
 	}
 }
 
@@ -31,6 +32,12 @@ func (db Karteikaesten) AnzahlOeffentlicherKaesten() (int, error) {
 // welcher der angegebene User erstellt hat
 func (db Karteikaesten) AnzahlKaestenUser(id string) (int, error) {
 	return db.views.NachAutor.RowCountByKey(id)
+}
+
+// AnzahlKartenUser gibt die Anzahl von Karteikarten zurück,
+// welcher der angegebene User erstellt hat
+func (db Karteikaesten) AnzahlKartenUser(id string) (int, error) {
+	return db.views.KartenNachAutor.RowCountByKey(id)
 }
 
 // AnzahlOeffentlicherKarten gibt die Anzahl öffentlicher Karteikarten zurück
@@ -86,7 +93,12 @@ func New() Karteikaesten {
 	}
 
 	db.views.OeffentlichNachKategorie = OeffentlichNachKategorie{
-		View: d.View("kasten", "oeffentlich-nach-kategorie")}
+		View: d.View("kasten", "oeffentlich-nach-kategorie"),
+	}
+
+	db.views.KartenNachAutor = KartenNachAutor{
+		View: d.View("karten", "nach-autor"),
+	}
 
 	return db
 }
