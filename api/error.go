@@ -31,3 +31,12 @@ func writeRequestError(resp *resty.Response) RequestError {
 		Body:       resp.Body(),
 	}
 }
+
+// NotFoundError somethin is not found
+type NotFoundError struct {
+	Msg string
+}
+
+func (e NotFoundError) Error() string {
+	return e.Msg
+}

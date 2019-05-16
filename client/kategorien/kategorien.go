@@ -7,9 +7,8 @@ import (
 
 // Kategorien database Kategorien
 type Kategorien struct {
-	db    api.DB
-	views struct {
-	}
+	db api.DB
+	//views struct {}
 }
 
 // Kategorie struct of a Karteikasten

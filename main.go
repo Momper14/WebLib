@@ -3,11 +3,12 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/Momper14/weblib/client/karteikaesten"
 	"github.com/Momper14/weblib/client/kategorien"
 	"github.com/Momper14/weblib/client/lernen"
-	"github.com/Momper14/weblib/client/users"
+	userspkg "github.com/Momper14/weblib/client/users"
 )
 
 func main() {
@@ -105,7 +106,7 @@ func main() {
 	}
 	fmt.Print("\n\n")
 	{
-		users := users.New()
+		users := userspkg.New()
 		{
 			tmp, err := users.AnzahlUsers()
 			if err != nil {
@@ -122,6 +123,52 @@ func main() {
 			} else {
 				fmt.Printf("%+v\n", tmp)
 			}
+		}
+		fmt.Print("\n")
+		{
+			user := userspkg.User{
+				Name:     "TestUser",
+				Bild:     "",
+				Email:    "test@email.com",
+				Password: "123456",
+				Seit:     time.Now().Unix(),
+			}
+			if err := users.UserErstellen(user); err != nil {
+				fmt.Println(err)
+			}
+		}
+		fmt.Print("\n")
+		{
+			if err := users.UserLoeschen("TestUser"); err != nil {
+				fmt.Println(err)
+			}
+		}
+		fmt.Print("\n")
+		{
+			if ok, err := users.CheckEmail("muster@example.com"); err != nil {
+				fmt.Println(err)
+			} else {
+				fmt.Println(ok)
+			}
+
+		}
+		fmt.Print("\n")
+		{
+			if ok, err := users.CheckName("Max Mustermann"); err != nil {
+				fmt.Println(err)
+			} else {
+				fmt.Println(ok)
+			}
+
+		}
+		fmt.Print("\n")
+		{
+			if ok, err := users.CheckName("Mustermann"); err != nil {
+				fmt.Println(err)
+			} else {
+				fmt.Println(ok)
+			}
+
 		}
 	}
 	fmt.Print("\n\n")

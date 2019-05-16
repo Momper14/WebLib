@@ -52,6 +52,32 @@ func rowCount(url string) (int, error) {
 	return (*resp.Result().(*Response)).Rows[0].Value, nil
 }
 
+func insert(url string, data interface{}) error {
+	resp, err := r().SetBody(data).Post(replaceSpaces(url))
+	if err != nil {
+		return err
+	}
+
+	if !resp.IsSuccess() {
+		return writeRequestError(resp)
+	}
+
+	return nil
+}
+
+func delete(url string) error {
+	resp, err := r().Delete(url)
+	if err != nil {
+		return err
+	}
+
+	if !resp.IsSuccess() {
+		return writeRequestError(resp)
+	}
+
+	return nil
+}
+
 // rr request with specific response type
 func rr(data interface{}) *resty.Request {
 	return r().SetResult(data)
@@ -63,9 +89,8 @@ func r() *resty.Request {
 }
 
 // checks if given Type is a Pointer
-func isPointer(v interface{}) error {
-
-	if val := reflect.ValueOf(v); val.Kind() == reflect.Ptr {
+func isPointer(t interface{}) error {
+	if val := reflect.ValueOf(t); val.Kind() == reflect.Ptr {
 		return nil
 	}
 	return fmt.Errorf("Fehler: Der angegebene Typ ist kein Pointer")
