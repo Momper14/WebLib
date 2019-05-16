@@ -49,7 +49,13 @@ func rowCount(url string) (int, error) {
 		return -1, writeRequestError(resp)
 	}
 
-	return (*resp.Result().(*Response)).Rows[0].Value, nil
+	rows := (*resp.Result().(*Response)).Rows
+
+	if len(rows) == 0 {
+		return 0, nil
+	}
+
+	return rows[0].Value, nil
 }
 
 func insert(url string, data interface{}) error {
