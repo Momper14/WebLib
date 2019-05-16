@@ -107,6 +107,9 @@ func docByID(id interface{}, url string, data interface{}) error {
 	}
 
 	if !resp.IsSuccess() {
+		if resp.StatusCode() == 404 {
+			return NotFoundError{Msg: "Error: Doc not found"}
+		}
 		return writeRequestError(resp)
 	}
 

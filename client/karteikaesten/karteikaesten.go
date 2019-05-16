@@ -1,6 +1,8 @@
 package karteikaesten
 
 import (
+	"fmt"
+
 	"github.com/Momper14/weblib/api"
 	"github.com/Momper14/weblib/client"
 )
@@ -71,6 +73,9 @@ func (db Karteikaesten) KastenByID(id string) (Karteikasten, error) {
 	doc := Karteikasten{}
 
 	if err := db.db.DocByID(id, &doc); err != nil {
+		if _, ok := err.(api.NotFoundError); ok {
+			return doc, client.NotFoundError{Msg: fmt.Sprintf("Fehler: Kasten %s nicht gefunden", id)}
+		}
 		return doc, err
 	}
 

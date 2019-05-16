@@ -1,6 +1,8 @@
 package users
 
 import (
+	"fmt"
+
 	"github.com/Momper14/weblib/api"
 	"github.com/Momper14/weblib/client"
 )
@@ -24,10 +26,14 @@ type User struct {
 }
 
 // UserByID gibt den User mit der angegebenen ID zurück
-func (db Users) UserByID(id string) (User, error) {
+func (db Users) UserByID(name string) (User, error) {
 	doc := User{}
 
-	err := db.db.DocByID(id, &doc)
+	err := db.db.DocByID(name, &doc)
+
+	if _, ok := err.(api.NotFoundError); ok {
+		err = client.NotFoundError{Msg: fmt.Sprintf("Fehler: User %s nicht gefunden", name)}
+	}
 
 	return doc, err
 }
@@ -73,13 +79,13 @@ func (db Users) CheckName(name string) (bool, error) {
 	var user User
 
 	if err := db.db.DocByID(name, &user); err != nil {
-		if val, ok := err.(api.RequestError); ok && val.Code == 404 {
+		if _, ok := err.(api.NotFoundError); ok {
 			return false, nil
 		}
 		return false, err
 	}
 
-	return false, nil
+	return true, nil
 }
 
 // New erzeugt einen neuen Users-Handler
