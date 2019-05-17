@@ -73,7 +73,6 @@ func insertDoc(url string, data interface{}) error {
 
 func updateDoc(url, id string, data interface{}) error {
 	url = fmt.Sprintf("%s/%s", url, id)
-	fmt.Println(replaceSpaces(url))
 	resp, err := r().SetBody(data).Put(replaceSpaces(url))
 	if err != nil {
 		return err
