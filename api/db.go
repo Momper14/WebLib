@@ -33,28 +33,33 @@ func (db DB) url() string {
 }
 
 // DocByID gets a Document by ID
-func (db DB) DocByID(id interface{}, data interface{}) error {
+func (db DB) DocByID(id string, data interface{}) error {
 	url := fmt.Sprintf("%s/%v", db.url(), id)
 	return docByID(id, url, data)
 }
 
 // InsertDoc insert the Data into the DB
 func (db DB) InsertDoc(data interface{}) error {
-	return insert(db.url(), data)
+	return insertDoc(db.url(), data)
+}
+
+// UpdateDoc updates the Data into the DB
+func (db DB) UpdateDoc(id string, data interface{}) error {
+	return updateDoc(db.url(), id, data)
 }
 
 // DeleteDoc deletes the Doc with the given id
-func (db DB) DeleteDoc(id interface{}) error {
+func (db DB) DeleteDoc(id string) error {
 	row, err := db.getRow(id)
 	if err != nil {
 		return err
 	}
 
-	return delete(fmt.Sprintf("%s/%v?rev=%v", db.url(), id, row.Value))
+	return deleteDoc(fmt.Sprintf("%s/%v?rev=%v", db.url(), id, row.Value))
 }
 
 // Exists checks if a Doc with the given id exists
-func (db DB) Exists(id interface{}) (bool, error) {
+func (db DB) Exists(id string) (bool, error) {
 	_, err := db.getRow(id)
 	if err != nil {
 		if _, ok := err.(NotFoundError); ok {
@@ -65,13 +70,9 @@ func (db DB) Exists(id interface{}) (bool, error) {
 	return true, nil
 }
 
-func (db DB) getRow(id interface{}) (RowView, error) {
+func (db DB) getRow(id string) (RowView, error) {
 	var data []RowView
-	if val, ok := id.(string); ok {
-		if val[0] != '[' {
-			id = fmt.Sprintf("\"%s\"", val)
-		}
-	}
+	id = fmt.Sprintf("\"%s\"", id)
 
 	if err := allDocs(fmt.Sprintf("%s/%s?reduce=false&key=%v", db.url(), AllDocs, id), &data); err != nil {
 		return RowView{}, err

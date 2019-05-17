@@ -28,7 +28,7 @@ func (db Kategorien) AlleKategorien() ([]Kategorie, error) {
 	}
 
 	for _, row := range rows {
-		kategorie, err := db.kategorieByID(row.ID.(string))
+		kategorie, err := db.kategorieByID(row.ID)
 		if err != nil {
 			return nil, err
 		}

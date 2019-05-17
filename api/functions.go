@@ -58,7 +58,7 @@ func rowCount(url string) (int, error) {
 	return rows[0].Value, nil
 }
 
-func insert(url string, data interface{}) error {
+func insertDoc(url string, data interface{}) error {
 	resp, err := r().SetBody(data).Post(replaceSpaces(url))
 	if err != nil {
 		return err
@@ -71,13 +71,34 @@ func insert(url string, data interface{}) error {
 	return nil
 }
 
-func delete(url string) error {
+func updateDoc(url, id string, data interface{}) error {
+	url = fmt.Sprintf("%s/%s", url, id)
+	fmt.Println(replaceSpaces(url))
+	resp, err := r().SetBody(data).Put(replaceSpaces(url))
+	if err != nil {
+		return err
+	}
+
+	if !resp.IsSuccess() {
+		if resp.StatusCode() == 404 {
+			return NotFoundError{Msg: "Error: Doc not found"}
+		}
+		return writeRequestError(resp)
+	}
+
+	return nil
+}
+
+func deleteDoc(url string) error {
 	resp, err := r().Delete(url)
 	if err != nil {
 		return err
 	}
 
 	if !resp.IsSuccess() {
+		if resp.StatusCode() == 404 {
+			return NotFoundError{Msg: "Error: Doc not found"}
+		}
 		return writeRequestError(resp)
 	}
 
@@ -102,7 +123,7 @@ func isPointer(t interface{}) error {
 	return fmt.Errorf("Fehler: Der angegebene Typ ist kein Pointer")
 }
 
-func docByID(id interface{}, url string, data interface{}) error {
+func docByID(id string, url string, data interface{}) error {
 	if err := isPointer(data); err != nil {
 		return err
 	}

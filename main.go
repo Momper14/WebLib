@@ -139,6 +139,18 @@ func main() {
 		}
 		fmt.Print("\n")
 		{
+			tmp, err := users.UserByID("Unknown")
+			if err != nil {
+				log.Fatal(err)
+			} else {
+				tmp.Email = ""
+				if err := users.UserAktualisieren(tmp); err != nil {
+					log.Fatal(err)
+				}
+			}
+		}
+		fmt.Print("\n")
+		{
 			if err := users.UserLoeschen("TestUser"); err != nil {
 				fmt.Println(err)
 			}

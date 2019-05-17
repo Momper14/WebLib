@@ -48,12 +48,23 @@ func (db Users) UserErstellen(user User) error {
 	return db.db.InsertDoc(user)
 }
 
+// UserAktualisieren aktualisiert den User
+func (db Users) UserAktualisieren(user User) error {
+	err := db.db.UpdateDoc(user.Name, user)
+
+	if _, ok := err.(api.NotFoundError); ok {
+		err = client.NotFoundError{Msg: fmt.Sprintf("Fehler: User %s nicht gefunden", user.Name)}
+	}
+
+	return err
+}
+
 // UserLoeschen löscht den User mit dem gegebenen Namen
 func (db Users) UserLoeschen(name string) error {
 	err := db.db.DeleteDoc(name)
 
 	if _, ok := err.(api.NotFoundError); ok {
-		return client.NotFoundError{Msg: "User nicht vorhanden"}
+		err = client.NotFoundError{Msg: fmt.Sprintf("Fehler: User %s nicht gefunden", name)}
 	}
 
 	return err

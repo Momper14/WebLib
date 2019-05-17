@@ -13,7 +13,7 @@ type View struct {
 
 // RowView struct for a Row of a View
 type RowView struct {
-	ID    interface{} `json:"id"`
+	ID    string      `json:"id"`
 	Key   interface{} `json:"key"`
 	Value interface{} `json:"value"`
 }
