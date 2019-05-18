@@ -11,8 +11,8 @@ import (
 
 // Karteikasten struct of a Karteikasten
 type Karteikasten struct {
-	ID             string        `json:"_id"`
-	Rev            string        `json:"_rev"`
+	ID             string        `json:"_id,omitempty"`
+	Rev            string        `json:"_rev,omitempty"`
 	Autor          string        `json:"Autor"`
 	Kategorie      string        `json:"Kategorie"`
 	Unterkategorie string        `json:"Unterkategorie"`
@@ -87,9 +87,22 @@ func (k Karteikasten) FachVonKarte(userid string, kartenindex int) (int, error) 
 // speichert diesen zwichen für wiederholte Anfragen
 func (k Karteikasten) getLerne(userid string) (lernen.Lerne, error) {
 	var err error
-	if k.lerne.ID != userid {
+	if k.lerne.User != userid {
 		k.lerne, err = lernen.New().LerneByUserAndKasten(userid, k.ID)
 	}
+
+	if _, ok := err.(client.NotFoundError); ok {
+		if k.Public {
+			lerne := lernen.Lerne{
+				User:   userid,
+				Kasten: k.ID,
+				Karten: make([]int, k.AnzahlKarten()),
+			}
+			return lerne, lernen.New().NeuesLerne(lerne)
+		}
+		return lernen.Lerne{}, client.ForbiddenError{Msg: fmt.Sprintf("User %s is not allowed to lern %s", userid, k.ID)}
+	}
+
 	return k.lerne, err
 }
 

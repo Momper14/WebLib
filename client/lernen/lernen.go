@@ -19,8 +19,8 @@ type Lernen struct {
 
 // Lerne struct of a "Lern-state"
 type Lerne struct {
-	ID     string `json:"_id"`
-	Rev    string `json:"_rev"`
+	ID     string `json:"_id,omitempty"`
+	Rev    string `json:"_rev,omitempty"`
 	User   string `json:"User"`
 	Kasten string `json:"Kasten"`
 	Karten []int  `json:"Karten"`
@@ -59,6 +59,11 @@ func (db Lernen) LerneByUserAndKasten(userid, kastenid string) (Lerne, error) {
 	return lerne, err
 }
 
+// NeuesLerne trägt einen neuen Lern-Status in die Datenbank
+func (db Lernen) NeuesLerne(lerne Lerne) error {
+	return db.db.InsertDoc(lerne)
+}
+
 // GelerntVonUser gibt alle Lernfortschritte des Users zurück
 func (db Lernen) GelerntVonUser(userid string) ([]Lerne, error) {
 	rows := []NachUserRow{}
@@ -76,6 +81,28 @@ func (db Lernen) GelerntVonUser(userid string) ([]Lerne, error) {
 		gelerntVon = append(gelerntVon, lerne)
 	}
 	return gelerntVon, nil
+}
+
+// KarteGelernt karte mit gegebenem index wurde von gegebenem user gelernt
+func (db Lernen) KarteGelernt(userid, kastenid string, index int, erfolg bool) error {
+	lerne, err := db.LerneByUserAndKasten(userid, kastenid)
+	if err != nil {
+		return err
+	}
+
+	if erfolg {
+		if lerne.Karten[index] < 4 {
+			lerne.Karten[index]++
+		}
+	} else {
+		lerne.Karten[index] = 0
+	}
+	return db.AktualisiereLerne(lerne)
+}
+
+// AktualisiereLerne speichert änderungen in die Datenbank
+func (db Lernen) AktualisiereLerne(lerne Lerne) error {
+	return db.db.InsertDoc(lerne)
 }
 
 // FachVonKarte gibt das Fach der Karteikarte aus dem Karteikasten für den User zurück
