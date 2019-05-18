@@ -90,6 +90,10 @@ func (db Lernen) KarteGelernt(userid, kastenid string, index int, erfolg bool) e
 		return err
 	}
 
+	if index < 0 || index >= len(lerne.Karten) {
+		return client.IndexOutOfRangeError{Msg: fmt.Sprintf("Index %d is out of range", index)}
+	}
+
 	if erfolg {
 		if lerne.Karten[index] < 4 {
 			lerne.Karten[index]++
