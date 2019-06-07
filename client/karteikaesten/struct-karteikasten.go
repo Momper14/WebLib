@@ -112,6 +112,11 @@ func (k Karteikasten) getLerne(userid string) (lernen.Lerne, error) {
 
 // Zufallskarte gibt eine zufällige Karte zurück
 func (k Karteikasten) Zufallskarte(userid string) (int, Karteikarte, error) {
+
+	if k.AnzahlKarten() == 0 {
+		return -1, Karteikarte{}, client.NotFoundError{Msg: "Keine Karte im Kasten vorhanden!"}
+	}
+
 	var faecher [5][]int
 	lerne, err := k.getLerne(userid)
 	if err != nil {
