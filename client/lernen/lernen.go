@@ -110,6 +110,11 @@ func (db Lernen) AktualisiereLerne(lerne Lerne) error {
 	return db.db.InsertDoc(lerne)
 }
 
+// LoescheLerne löscht den Lernstand aus der Datenbank
+func (db Lernen) LoescheLerne(id string) error {
+	return db.db.DeleteDoc(id)
+}
+
 // FachVonKarte gibt das Fach der Karteikarte aus dem Karteikasten für den User zurück
 func (db Lernen) FachVonKarte(userid, kastenid, kartenindex string) (int, error) {
 	rows := []FachNachKarteRow{}
