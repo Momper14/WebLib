@@ -37,6 +37,10 @@ func (k Karteikasten) AnzahlKarten() int {
 
 // Fortschritt gibt den Fortschritt des angegebenen Users für diesen Karteikasten zurück
 func (k Karteikasten) Fortschritt(userid string) (int, error) {
+	if k.AnzahlKarten() == 0 {
+		return 0, nil
+	}
+
 	faecher, err := k.KartenProFach(userid)
 	if err != nil {
 		return -1, err
