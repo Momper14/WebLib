@@ -71,7 +71,16 @@ func (db Karteikaesten) OeffentlicheKaestenByKategorie(kategorie string) ([]Kart
 
 // KastenAnlegen fügt den angegebenen Karteikasten in die Datenbank
 func (db Karteikaesten) KastenAnlegen(kasten Karteikasten) error {
-	return db.db.InsertDoc(kasten)
+	if err := db.db.InsertDoc(kasten); err != nil {
+		return err
+	}
+
+	lerne := lernen.Lerne{
+		User:   kasten.Autor,
+		Kasten: kasten.ID,
+	}
+
+	return lernen.New().NeuesLerne(lerne)
 }
 
 // KastenBearbeiten aktualisiert den angegebenen Karteikasten in die Datenbank
