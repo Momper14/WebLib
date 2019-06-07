@@ -5,6 +5,7 @@ import (
 
 	"github.com/Momper14/weblib/api"
 	"github.com/Momper14/weblib/client"
+	"github.com/Momper14/weblib/client/lernen"
 )
 
 // Karteikaesten database Karteikaesten
@@ -66,6 +67,36 @@ func (db Karteikaesten) OeffentlicheKaestenByKategorie(kategorie string) ([]Kart
 	}
 
 	return kaesten, nil
+}
+
+// KastenAnlegen fügt den angegebenen Karteikasten in die Datenbank
+func (db Karteikaesten) KastenAnlegen(kasten Karteikasten) error {
+	return db.db.InsertDoc(kasten)
+}
+
+// KastenBearbeiten aktualisiert den angegebenen Karteikasten in die Datenbank
+func (db Karteikaesten) KastenBearbeiten(kasten Karteikasten) error {
+	err := db.db.UpdateDoc(kasten.ID, kasten)
+
+	if _, ok := err.(api.NotFoundError); ok {
+		return client.NotFoundError{Msg: fmt.Sprintf("Fehler: Kasten %s nicht gefunden", kasten.ID)}
+	}
+
+	return err
+}
+
+// KastenLoeschen löscht den angegebenen Kasten und alle Lernzustände
+func (db Karteikaesten) KastenLoeschen(id string) error {
+	// Kasten existiert?
+	if _, err := db.KastenByID(id); err != nil {
+		return err
+	}
+
+	if err := lernen.New().LoeschenAllerLerneZuKasten(id); err != nil {
+		return err
+	}
+
+	return db.db.DeleteDoc(id)
 }
 
 // KastenByID Gibt den Karteikasten der angegebenen ID zurück

@@ -14,6 +14,7 @@ type Lernen struct {
 		GelerntVon    GelerntVon
 		NachUser      NachUser
 		FachNachKarte FachNachKarte
+		KastenNachID  KastenNachID
 	}
 }
 
@@ -123,6 +124,23 @@ func (db Lernen) FachVonKarte(userid, kastenid, kartenindex string) (int, error)
 	return rows[0].Fach, nil
 }
 
+// LoeschenAllerLerneZuKasten löscht alle Lernstände eines Kastens
+func (db Lernen) LoeschenAllerLerneZuKasten(kastenid string) error {
+	var rows []KastenNachIDRow
+
+	if err := db.views.KastenNachID.DocsByKey(kastenid, &rows); err != nil {
+		return err
+	}
+
+	for _, row := range rows {
+		if err := db.db.DeleteDoc(row.ID); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // New erzeugt einen neuen Lernen-Handler
 func New() Lernen {
 	var db Lernen
@@ -138,6 +156,9 @@ func New() Lernen {
 
 	db.views.FachNachKarte = FachNachKarte{
 		View: d.View("karten", "fach-nach-karte")}
+
+	db.views.KastenNachID = KastenNachID{
+		View: d.View("kasten", "nach-id")}
 
 	return db
 }
