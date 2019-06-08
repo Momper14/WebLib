@@ -156,7 +156,7 @@ func (db Lernen) AlleLerneZuKasten(kastenid string) ([]Lerne, error) {
 		return lernen, err
 	}
 
-	for _, l := range lernen {
+	for _, l := range rows {
 		if lerne, err = db.LerneByID(l.ID); err != nil {
 			return lernen, err
 		}

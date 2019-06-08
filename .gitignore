@@ -1,2 +1,3 @@
 *.exe
 gin-bin
+main.go
