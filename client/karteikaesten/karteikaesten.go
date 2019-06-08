@@ -78,6 +78,7 @@ func (db Karteikaesten) KastenAnlegen(kasten Karteikasten) error {
 	lerne := lernen.Lerne{
 		User:   kasten.Autor,
 		Kasten: kasten.ID,
+		Karten: []int{},
 	}
 
 	return lernen.New().NeuesLerne(lerne)

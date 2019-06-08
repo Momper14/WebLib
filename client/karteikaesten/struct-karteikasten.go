@@ -35,6 +35,9 @@ func (k Karteikasten) KarteHinzufuegen(karte Karteikarte) error {
 	lernen := lernen.New()
 
 	k.Karten = append(k.Karten, karte)
+	if err := New().KastenBearbeiten(k); err != nil {
+		return err
+	}
 
 	lArr, err := lernen.AlleLerneZuKasten(k.ID)
 	if err != nil {
@@ -57,6 +60,9 @@ func (k Karteikasten) KarteAktualisieren(index int, karte Karteikarte) error {
 	}
 
 	k.Karten[index] = karte
+	if err := New().KastenBearbeiten(k); err != nil {
+		return err
+	}
 
 	lArr, err := lernen.AlleLerneZuKasten(k.ID)
 	if err != nil {
@@ -79,6 +85,9 @@ func (k Karteikasten) KarteLoeschen(index int) error {
 	}
 
 	k.Karten = append(k.Karten[:index], k.Karten[index+1:]...)
+	if err := New().KastenBearbeiten(k); err != nil {
+		return err
+	}
 
 	lArr, err := lernen.AlleLerneZuKasten(k.ID)
 	if err != nil {
