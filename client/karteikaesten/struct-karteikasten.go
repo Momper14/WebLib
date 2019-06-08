@@ -30,6 +30,68 @@ type Karteikarte struct {
 	Antwort string `json:"Antwort"`
 }
 
+// KarteHinzufuegen fügt dem Kasten die neue Karte hinzu
+func (k Karteikasten) KarteHinzufuegen(karte Karteikarte) error {
+	lernen := lernen.New()
+
+	k.Karten = append(k.Karten, karte)
+
+	lArr, err := lernen.AlleLerneZuKasten(k.ID)
+	if err != nil {
+		return err
+	}
+
+	for i := 0; i < len(lArr); i++ {
+		lArr[i].Karten = append(lArr[i].Karten, 0)
+	}
+
+	return lernen.AktualisiereAlleLerne(lArr)
+}
+
+// KarteAktualisieren ersetzt die Karte am gegebenen Index
+func (k Karteikasten) KarteAktualisieren(index int, karte Karteikarte) error {
+	lernen := lernen.New()
+
+	if index < 0 || index >= len(k.Karten) {
+		return client.IndexOutOfRangeError{Msg: fmt.Sprintf("%d ist keine gültige Karte", index)}
+	}
+
+	k.Karten[index] = karte
+
+	lArr, err := lernen.AlleLerneZuKasten(k.ID)
+	if err != nil {
+		return err
+	}
+
+	for i := 0; i < len(lArr); i++ {
+		lArr[i].Karten[index] = 0
+	}
+
+	return lernen.AktualisiereAlleLerne(lArr)
+}
+
+// KarteLoeschen löscht die Karte am gegebenen Index
+func (k Karteikasten) KarteLoeschen(index int) error {
+	lernen := lernen.New()
+
+	if index < 0 || index >= len(k.Karten) {
+		return client.IndexOutOfRangeError{Msg: fmt.Sprintf("%d ist keine gültige Karte", index)}
+	}
+
+	k.Karten = append(k.Karten[:index], k.Karten[index+1:]...)
+
+	lArr, err := lernen.AlleLerneZuKasten(k.ID)
+	if err != nil {
+		return err
+	}
+
+	for i := 0; i < len(lArr); i++ {
+		lArr[i].Karten = append(lArr[i].Karten[:index], lArr[i].Karten[index+1:]...)
+	}
+
+	return lernen.AktualisiereAlleLerne(lArr)
+}
+
 // AnzahlKarten gibt die Anzahl von Karten zurück
 func (k Karteikasten) AnzahlKarten() int {
 	return len(k.Karten)

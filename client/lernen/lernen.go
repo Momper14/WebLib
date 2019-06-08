@@ -30,12 +30,9 @@ type Lerne struct {
 // LerneByID gibt den Lernfortschritt mit der angegebenen ID zurück
 func (db Lernen) LerneByID(id string) (Lerne, error) {
 	doc := Lerne{}
+	err := db.db.DocByID(id, &doc)
 
-	if err := db.db.DocByID(id, &doc); err != nil {
-		return doc, err
-	}
-
-	return doc, nil
+	return doc, err
 }
 
 // LerneByUserAndKasten gibt den Lernfortschritt
@@ -138,7 +135,43 @@ func (db Lernen) LoeschenAllerLerneZuKasten(kastenid string) error {
 	}
 
 	for _, row := range rows {
-		if err := db.db.DeleteDoc(row.ID); err != nil {
+		if err := db.LoescheLerne(row.ID); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// AlleLerneZuKasten gibt alle Lernstände zu einem Kasten zurück
+func (db Lernen) AlleLerneZuKasten(kastenid string) ([]Lerne, error) {
+	var (
+		rows   []KastenNachIDRow
+		lernen []Lerne
+		err    error
+		lerne  Lerne
+	)
+
+	if err = db.views.KastenNachID.DocsByKey(kastenid, &rows); err != nil {
+		return lernen, err
+	}
+
+	for _, l := range lernen {
+		if lerne, err = db.LerneByID(l.ID); err != nil {
+			return lernen, err
+		}
+
+		lernen = append(lernen, lerne)
+	}
+
+	return lernen, nil
+}
+
+// AktualisiereAlleLerne aktualisiert alle Lernstände
+func (db Lernen) AktualisiereAlleLerne(lernen []Lerne) error {
+
+	for _, l := range lernen {
+		if err := db.AktualisiereLerne(l); err != nil {
 			return err
 		}
 	}
