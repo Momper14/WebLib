@@ -1,7 +1,6 @@
 package client
 
 import (
-	"fmt"
 	"log"
 	"os"
 )
@@ -10,9 +9,8 @@ import (
 var HostURL string
 
 func init() {
-	pass := os.Getenv("WEBPASS")
-	if pass == "" {
-		log.Fatal("variable WEBPASS nicht gesetzt!. Mit 'export WEBPASS=pass' setzen.")
+	HostURL = os.Getenv("COUCHDB_URL")
+	if HostURL == "" {
+		log.Fatal("variable COUCHDB_URL nicht gesetzt!. Mit 'export COUCHDB_URL=url' setzen.")
 	}
-	HostURL = fmt.Sprintf("http://admin:%s@localhost:5984", pass)
 }
