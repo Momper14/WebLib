@@ -43,6 +43,14 @@ func (db Karteikaesten) AnzahlKartenUser(id string) (int, error) {
 	return db.views.KartenNachAutor.RowCountByKey(id)
 }
 
+// KastenVonUser gibt alle Karteikästen eines Users zurück
+func (db Karteikaesten) KastenVonUser(id string) ([]NachAutorRow, error) {
+	var rows []NachAutorRow
+	err := db.views.NachAutor.DocsByKey(id, &rows)
+
+	return rows, err
+}
+
 // AnzahlOeffentlicherKarten gibt die Anzahl öffentlicher Karteikarten zurück
 func (db Karteikaesten) AnzahlOeffentlicherKarten() (int, error) {
 	return db.views.OeffentlichKastenidKartenindex.RowCount()

@@ -5,6 +5,7 @@ import (
 
 	"github.com/Momper14/weblib/api"
 	"github.com/Momper14/weblib/client"
+	"github.com/Momper14/weblib/client/karteikaesten"
 )
 
 // Users database Users
@@ -62,6 +63,19 @@ func (db Users) UserAktualisieren(user User) error {
 // UserLoeschen löscht den User mit dem gegebenen Namen
 func (db Users) UserLoeschen(name string) error {
 	err := db.db.DeleteDoc(name)
+
+	karteikaesten := karteikaesten.New()
+
+	rows, err := karteikaesten.KastenVonUser(name)
+	if err != nil {
+		return err
+	}
+
+	for _, row := range rows {
+		if err := karteikaesten.KastenLoeschen(row.KastenID); err != nil {
+			return err
+		}
+	}
 
 	if _, ok := err.(api.NotFoundError); ok {
 		err = client.NotFoundError{Msg: fmt.Sprintf("Fehler: User %s nicht gefunden", name)}
