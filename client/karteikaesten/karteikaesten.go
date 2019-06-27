@@ -12,10 +12,11 @@ import (
 type Karteikaesten struct {
 	db    api.DB
 	views struct {
-		OeffentlichKastenidKartenindex OeffentlichKastenidKartenindex
-		NachAutor                      NachAutor
-		OeffentlichNachKategorie       OeffentlichNachKategorie
-		KartenNachAutor                KartenNachAutor
+		OeffentlichKastenidKartenindex    OeffentlichKastenidKartenindex
+		OeffentlichNachOberUnterkategorie OeffentlichNachOberUnterkategorie
+		NachAutor                         NachAutor
+		OeffentlichNachKategorie          OeffentlichNachKategorie
+		KartenNachAutor                   KartenNachAutor
 	}
 }
 
@@ -63,6 +64,31 @@ func (db Karteikaesten) OeffentlicheKaestenByKategorie(kategorie string) ([]Kart
 	rows := []OeffentlichNachKategorieRow{}
 
 	if err := db.views.OeffentlichNachKategorie.DocsByKey(kategorie, &rows); err != nil {
+		return kaesten, err
+	}
+
+	for _, row := range rows {
+		kasten, err := db.KastenByID(row.ID)
+		if err != nil {
+			return kaesten, err
+		}
+		kaesten = append(kaesten, kasten)
+	}
+
+	return kaesten, nil
+}
+
+// OeffentlicheKaestenByOberUnterkategorie Gibt einen Array mit allen öffentlichen Karteikästen
+// der angegebenen Ober- und UnterKategorie zurück
+func (db Karteikaesten) OeffentlicheKaestenByOberUnterkategorie(oberkategorie, unterkategorie string) ([]Karteikasten, error) {
+	var (
+		kaesten []Karteikasten
+		rows    []OeffentlichNachOberUnterkategorieRow
+	)
+
+	key := fmt.Sprintf("[\"%s\", \"%s\"]", oberkategorie, unterkategorie)
+
+	if err := db.views.OeffentlichNachOberUnterkategorie.DocsByKey(key, &rows); err != nil {
 		return kaesten, err
 	}
 
@@ -140,6 +166,10 @@ func New() Karteikaesten {
 
 	db.views.OeffentlichKastenidKartenindex = OeffentlichKastenidKartenindex{
 		View: d.View("karten", "oeffentlich-kastenid-kartenindex"),
+	}
+
+	db.views.OeffentlichNachOberUnterkategorie = OeffentlichNachOberUnterkategorie{
+		View: d.View("karten", "oeffentlich-nach-ober-unterkategorie"),
 	}
 
 	db.views.NachAutor = NachAutor{
