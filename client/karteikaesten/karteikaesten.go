@@ -13,9 +13,9 @@ type Karteikaesten struct {
 	db    api.DB
 	views struct {
 		OeffentlichKastenidKartenindex    OeffentlichKastenidKartenindex
-		OeffentlichNachOberUnterkategorie OeffentlichNachOberUnterkategorie
 		NachAutor                         NachAutor
 		OeffentlichNachKategorie          OeffentlichNachKategorie
+		OeffentlichNachOberUnterkategorie OeffentlichNachOberUnterkategorie
 		KartenNachAutor                   KartenNachAutor
 	}
 }
@@ -168,16 +168,16 @@ func New() Karteikaesten {
 		View: d.View("karten", "oeffentlich-kastenid-kartenindex"),
 	}
 
-	db.views.OeffentlichNachOberUnterkategorie = OeffentlichNachOberUnterkategorie{
-		View: d.View("karten", "oeffentlich-nach-ober-unterkategorie"),
-	}
-
 	db.views.NachAutor = NachAutor{
 		View: d.View("kasten", "nach-autor"),
 	}
 
 	db.views.OeffentlichNachKategorie = OeffentlichNachKategorie{
 		View: d.View("kasten", "oeffentlich-nach-kategorie"),
+	}
+
+	db.views.OeffentlichNachOberUnterkategorie = OeffentlichNachOberUnterkategorie{
+		View: d.View("kasten", "oeffentlich-nach-ober-unterkategorie"),
 	}
 
 	db.views.KartenNachAutor = KartenNachAutor{
